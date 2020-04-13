@@ -593,7 +593,7 @@ $( document ).ready(function() {
     });
 
     $('#cmdContinue').click(function() {
-        setIntFnc();
+        setIntervalFnc();
     });
 
 });

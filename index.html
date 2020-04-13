@@ -18,6 +18,7 @@
     <div class="row">
       <div class="col-12">
         <h1>Virus Spreading Simulation</h1>
+        <p>Developed on Firefox, runs on Chrome and Microsoft Edge based on Chromium. Does not work on IE. Runs on Android but not on iPhone.</p>
         <h2>Preface</h2>
         <p>
           Virus spreading simulation for a population of 1000*1000 individuals. They live in homes arranged on a chessboard with 1 million fields. In this approach the simulation model
@@ -33,7 +34,8 @@
           idea - and especially a visual feedback - of how a virus can spread and what parameters may affecting it in which way.
         </p>        
         <p>
-          Most of them travel short distances and just a few travel longer distances. When they travel there is a chance that they infect another inhabitant with the virus.
+          Most indivduals travel short distances and just a few travel longer distances. When they travel there is a chance that they infect another inhabitant with the virus. The ratio of
+          short and long distance movements can be adjusted.
         </p>
         <h2>States Of Individuals</h2>
         <p>Infected individuals go through the following states:</p>
@@ -87,7 +89,7 @@
             parameters (simulated randomness).
           </li>
         </ul>
-        <h2>Technical</h2>
+        <h2>Technical</h2>        
         <p>
           You finde the simulator code in virus.js. It consists mainly of two classes: Population and Individual. 
           The iterate methods perform a simulation step. The document ready function sets a few handelrs and inits the model.
