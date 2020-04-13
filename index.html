@@ -1,0 +1,339 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Virus</title>
+  <meta name="description" content="Virus Spreading Simulator">
+  <meta name="author" content="&copysr;">
+
+  <link rel="stylesheet" href="Chart.css">
+  <link rel="stylesheet" href="virus.css">
+  
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+</head>
+
+<body>
+  <div class="container">  
+    <div class="row">
+      <div class="col-12">
+        <h1>Virus Spreading Simulation</h1>
+        <h2>Preface</h2>
+        <p>
+          Virus spreading simulation for a population of 1000*1000 individuals. They live in homes arranged on a chessboard with 1 million fields. In this approach the simulation model
+          is focused on single individuals not on an entire population. The effects of the population are the sum of effects of all individuals that are simulated.
+        </p>    
+        <p>
+          The advantage of this approach is its simplicity. Even the simulation of a tracing application is possible that sends a signal back through the infection chain in the moment
+          when an individual gets sick. 
+        </p>
+        <p>
+          Be carefull when relating ideas of this simulation to reality. We do not live on chessboards, we have differing population densities, are moving on complex traffic routes and the 
+          behaviour of real people cannot be simulated with such a simple script. Reality is far more complex and there is always the danger of making models too simple. But it may give an 
+          idea - and especially a visual feedback - of how a virus can spread and what parameters may affecting it in which way.
+        </p>        
+        <p>
+          Most of them travel short distances and just a few travel longer distances. When they travel there is a chance that they infect another inhabitant with the virus.
+        </p>
+        <h2>States Of Individuals</h2>
+        <p>Infected individuals go through the following states:</p>
+        <ul>          
+          <li>infected but not spreading</li>
+          <li>infected and spreading virus</li>
+          <li>
+            getting sick and not moving anymore.<br/>after that the following states are possible:
+            <ul>
+              <li>healthy and immune</li>
+              <li>
+                hospitlized<br/>after that the following states are possible
+                <ul>
+                  <li>healthy and immune</li>
+                  <li>
+                    intensive hospitalization<br/>after that the following states are possible:
+                    <ul>
+                      <li>healthy and immune</li>
+                      <li>death</li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>          
+          <li>
+            isolation (due to tracking app signal)<br/>after that the following states are possible:
+            <ul>
+              <li>sick because of infection</li>
+              <li>healthy and immune</li>
+              <li>healthy but not immune</li>
+            </ul>
+          </li>
+        </ul>
+        <h2>Simulation Parameters</h2>
+        <ul>
+          <li>
+            The Infection rate is not an average. It is an equal amount of infections attempts that happen per individual. 
+            If the target individal is already infected or immune the attempt will fail. With a raising number of immune
+            individuals it will be more difficult to infect another indivdual.
+          </li>
+          <li>Probabilities are from 0 to 1 which means from 0 to 100%.</li>          
+          <li>Durations are counted in simulation steps and should signify days.</li>
+          <li>
+            Jitter is an amount of time that is added or subtracted from time periods to generate a more natural spreading pattern.
+            Not all individuals are sick for the same amount of time. Jitter is a value between 0 and 1. For ex. 0.5 on a periods
+            of 10 steps means that the time can vary between 5 and 15 steps for each individual.
+          </li>
+          <li>
+            Depending on the start conditions the simulation can stop in a very early stage or behave different with the same
+            parameters (simulated randomness).
+          </li>
+        </ul>
+        <h2>Technical</h2>
+        <p>
+          You finde the simulator code in virus.js. It consists mainly of two classes: Population and Individual. 
+          The iterate methods perform a simulation step. The document ready function sets a few handelrs and inits the model.
+          The simulation is driven by a time interval that is fired when clicking on start.
+        </p>
+        <p>
+          Components used: bootstrap, jquery and chart.js.
+        </p>
+        <p>If you have questions then send an email to contact(at)mephzara.com.</p>
+        <a href="https://github.com/mephzara/virus_simulator" target="_blank">Github repository</a>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+        <div class="col-md-2 col-form-label">
+          <label for="moveShortRange">Short Range [px]</label>
+        </div>
+        <div class="col-md-2">
+          <input class="form-control" type="number" value="10" step="10" min="2" max="1000" id="moveShortRange"/>
+        </div>
+
+        <div class="col-md-2 col-form-label">
+          <label for="movLongRange">Long Range [px]</label>
+        </div>
+        <div class="col-md-2">
+          <input class="form-control" type="number" value="250" step="50" min="2" max="1000" id="movLongRange">
+        </div>  
+
+        <div class="col-md-2 col-form-label">
+          <label for="movShortLongRatio">Long / Short Ratio [0..1]</label>
+        </div>
+        <div class="col-md-2">
+          <input class="form-control" type="number" value="0.3" step="0.1" min="0" max="1" id="movShortLongRatio">
+        </div>  
+    </div>
+
+    <hr/>
+
+    <div class="row">
+      <div class="col-md-2 col-form-label">
+        <label for="incubationTime">Incubation Time [Steps]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="5" min="0" max="100" id="incubationTime">
+      </div>
+
+      <div class="col-md-2 col-form-label">
+        <label for="incubationTimeJitter">Incubation Time Jitter [0..1]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="0.3" step="0.1" min="0" max="1" id="incubationTimeJitter">
+      </div>  
+
+      <div class="col-md-2 col-form-label">
+        <label for="infectionRate">Infection Rate [n]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="3" step="1" min="0" max="10" id="infectionRate">
+      </div>  
+    </div>
+
+    <hr/>  
+
+    <div class="row">
+      <div class="col-md-2 col-form-label">
+        <label for="timeToGetSick">Time To Get Sick [Steps]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="5" min="0" max="100" id="timeToGetSick">
+      </div>
+
+      <div class="col-md-2 col-form-label">
+        <label for="timeToGetSickJitter">Time To Get Sick Jitter [0..1]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="0.5" step="0.1" min="0" max="1" id="timeToGetSickJitter">
+      </div>  
+
+      <div class="col-md-2 col-form-label">
+        <label for="sicknessProbability">Sickness Probability [0..1]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="0.1428" step="0.05" min="0" max="1" id="sicknessProbability">
+      </div>  
+    </div>
+
+    <br/>
+
+    <div class="row">
+      <div class="col-md-2 col-form-label">
+        <label for="sickTime">Sick Time [Steps]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="10" min="0" max="100" id="sickTime">
+      </div>
+
+      <div class="col-md-2 col-form-label">
+        <label for="sickTimeJitter">Sick Time Jitter [0..1]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="0.3" step="0.1" min="0" max="1" id="sickTimeJitter">
+      </div>  
+    </div>
+
+    <hr/>
+
+    <div class="row">
+      <div class="col-md-2 col-form-label">
+        <label for="tracingAppUsage">Tracing App Usage [0..1]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="0.80" step="0.05" min="0" max="1" id="tracingAppUsage">
+      </div>
+
+      <div class="col-md-2 col-form-label">
+        <label for="tracingTestProbability">Testing Probability Per Step [0..1]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="0.25" step="0.05" min="0" max="1" id="tracingTestProbability">
+      </div>
+
+      <div class="col-md-2 col-form-label">
+        <label for="tracingAppStart">Tracing App Start [Steps]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="60" min="0" max="500" id="tracingAppStart">
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+      <div class="col-md-2 col-form-label">
+        <label for="hospitalizationTime">Hospitalization Time [Steps]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="10" min="0" max="100" id="hospitalizationTime">
+      </div>
+
+      <div class="col-md-2 col-form-label">
+        <label for="hospitalizationTimeJitter">Hospitalization Time Jitter [0..1]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="0.3" step="0.1" min="0" max="1" id="hospitalizationTimeJitter">
+      </div>  
+
+      <div class="col-md-2 col-form-label">
+        <label for="hospitalizationProbability">Hospitalization Probability [0..1]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="0.2" step="0.05" min="0" max="1" id="hospitalizationProbability">
+      </div>  
+    </div>
+
+    <div class="row">
+      <div class="col-md-2 col-form-label">
+        <label for="hospIntenseTime">Intensive Care Time [Steps]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="10" min="0" max="100" id="hospIntenseTime">
+      </div>
+
+      <div class="col-md-2 col-form-label">
+        <label for="hospIntenseTimeJitter">Intensive Care Time Jitter [0..1]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="0.3" step="0.1" min="0" max="1" id="hospIntenseTimeJitter">
+      </div>  
+
+      <div class="col-md-2 col-form-label">
+        <label for="hospIntenseProbability">Intensive Care Probability [0..1]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="0.1" step="0.05" min="0" max="1" id="hospIntenseProbability">
+      </div>  
+    </div>
+
+    <div class="row">
+      <div class="col-md-2 col-form-label">
+        <label for="caseFatalityRate">Case Fatality Rate On Intensive Care [0..1]</label>
+      </div>
+      <div class="col-md-2">
+        <input class="form-control" type="number" value="0.5" step="0.05" min="0" max="1" id="caseFatalityRate">
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+      <div class="col-md-1">
+        <button class="btn btn-primary" id="cmdStart">Start</button>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary" id="cmdStop">Stop</button>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-primary" id="cmdContinue">Continue</button>
+      </div>
+    </div>
+
+    <hr/>
+
+    <div class="row">
+      <div class="col-md-6">
+        <h3>Map</h3>
+      </div>
+      <div class="col-md-6">
+        <h3>Charts</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <canvas class="world" id="world" width="1000" height="1000"></canvas>  
+      </div>
+      <div class="col-md-6">
+        <div class="row">
+          <div class="col-md-12">
+            <canvas id="chartInfections" width="1200" height="400"></canvas>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <canvas id="chartHsp" width="1200" height="400"></canvas>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <canvas id="chartIntenseHsp" width="1200" height="400"></canvas>
+          </div>
+        </div>           
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <p>&copy;&nbsp;2020&nbsp;by&nbsp;Andreas&nbsp;Kardin. The code is public domain, credits appreciated.</p>        
+      </div>
+    </div>
+  </div>
+
+  <script src="jquery-3.4.1.js"></script>
+  <script src="bootstrap/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
+  <script src="Chart.js"></script>
+  <script src="virus.js"></script>
+
+</body>
+</html>
