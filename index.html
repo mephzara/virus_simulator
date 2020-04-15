@@ -18,24 +18,24 @@
     <div class="row">
       <div class="col-12">
         <h1>Virus Spreading Simulation</h1>
-        <p>Developed on Firefox, runs on Chrome and Microsoft Edge based on Chromium. Does not work on IE. Runs on Android but not on iPhone.</p>
+        <p>Developed on Firefox, runs on Chrome and the new Microsoft Edge based on Chromium. Does not work on IE and the old Edge. Runs on Android but not on iPhone.</p>
         <h2>Preface</h2>
         <p>
           Virus spreading simulation for a population of 1000*1000 individuals. They live in homes arranged on a chessboard with 1 million fields. In this approach the simulation model
           is focused on single individuals not on an entire population. The effects of the population are the sum of effects of all individuals that are simulated.
         </p>    
         <p>
-          The advantage of this approach is its simplicity. Even the simulation of a tracing application is possible that sends a signal back through the infection chain in the moment
+          The advantage of this approach is its simplicity. Even the simulation of a tracing application is possible which sends a signal through the infection chain in the moment
           when an individual gets sick. 
         </p>
         <p>
           Be carefull when relating ideas of this simulation to reality. We do not live on chessboards, we have differing population densities, are moving on complex traffic routes and the 
           behaviour of real people cannot be simulated with such a simple script. Reality is far more complex and there is always the danger of making models too simple. But it may give an 
-          idea - and especially a visual feedback - of how a virus can spread and what parameters may affecting it in which way.
+          idea - and especially a visual feedback - of how a virus can spread and what parameters may affect it in which way.
         </p>        
         <p>
-          Most indivduals travel short distances and just a few travel longer distances. When they travel there is a chance that they infect another inhabitant with the virus. The ratio of
-          short and long distance movements can be adjusted.
+          The basic idea in this simulatiuon ist that most indivduals travel short distances and just a few travel longer distances. When they travel there is a chance that they infect
+          another inhabitant with the virus. The ratio of short and long distance movements can be adjusted.
         </p>
         <h2>States Of Individuals</h2>
         <p>Infected individuals go through the following states:</p>
@@ -54,7 +54,7 @@
                     intensive hospitalization<br/>after that the following states are possible:
                     <ul>
                       <li>healthy and immune</li>
-                      <li>death</li>
+                      <li>dead</li>
                     </ul>
                   </li>
                 </ul>
@@ -81,19 +81,24 @@
           <li>Durations are counted in simulation steps and should signify days.</li>
           <li>
             Jitter is an amount of time that is added or subtracted from time periods to generate a more natural spreading pattern.
-            Not all individuals are sick for the same amount of time. Jitter is a value between 0 and 1. For ex. 0.5 on a periods
-            of 10 steps means that the time can vary between 5 and 15 steps for each individual.
+            Not all individuals are sick for the same amount of time. Jitter is a value between 0 and 1. For ex. 0.5 jitter on a period
+            of 10 steps means that the time can vary between 5 and 15 steps.
           </li>
           <li>
             Depending on the start conditions the simulation can stop in a very early stage or behave different with the same
             parameters (simulated randomness).
           </li>
+          <li>
+            Tracing app will start at a certain step (Tracing App Start). If a person gets sick then a tracing signal will alway be sent to
+            all other indivuals that are on the infection chain. A tracing signal will also sent with a adjustable probabilty per step
+            (Testing Probability Per Step). This simulates indivuals with mild symptoms that will be tested from time to time.
+          </li>
         </ul>
         <h2>Technical</h2>        
         <p>
-          You finde the simulator code in virus.js. It consists mainly of two classes: Population and Individual. 
-          The iterate methods perform a simulation step. The document ready function sets a few handelrs and inits the model.
-          The simulation is driven by a time interval that is fired when clicking on start.
+          You will find the simulator code in virus.js. It consists mainly of two classes: Population and Individual. 
+          The iterate methods perform a simulation step. The document ready function sets a few handlers and inits the model.
+          The simulation is driven by a timer interval that is fired regularly when clicking on start.
         </p>
         <p>
           Components used: bootstrap, jquery and chart.js.
