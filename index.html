@@ -146,10 +146,10 @@
       </div>  
 
       <div class="col-md-2 col-form-label">
-        <label for="infectionRate">Infection Rate [n]</label>
+        <label for="infectionRate">Infection Rate (Attempts) [n]</label>
       </div>
       <div class="col-md-2">
-        <input class="form-control" type="number" value="3" step="1" min="0" max="10" id="infectionRate">
+        <input class="form-control" type="number" value="3" step="1" min="0" max="100" id="infectionRate">
       </div>  
     </div>
 
@@ -303,31 +303,32 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-5">
         <canvas class="world" id="world" width="1000" height="1000"></canvas>  
       </div>
-      <div class="col-md-6">
+      <div class="col-md-7">
         <div class="row">
-          <div class="col-md-12">
-            <canvas id="chartInfections" width="1200" height="400"></canvas>
+          <div class="col-md-6">
+            <canvas id="chartInfections" width="700" height="500"></canvas>
+          </div>
+          <div class="col-md-6">
+            <canvas id="chartHsp" width="700" height="500"></canvas>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-12">
-            <canvas id="chartHsp" width="1200" height="400"></canvas>
+          <div class="col-md-6">
+            <canvas id="chartIntenseHsp" width="700" height="500"></canvas>
+          </div>        
+          <div class="col-md-6">
+            <canvas id="chartCoefficients" width="700" height="500"></canvas>
           </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <canvas id="chartIntenseHsp" width="1200" height="400"></canvas>
-          </div>
-        </div>           
+        </div>          
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-12">
-        <p>&copy;&nbsp;2020&nbsp;by&nbsp;Andreas&nbsp;Kardin. The code is public domain, credits appreciated.</p>        
+        &nbsp;
       </div>
     </div>
   </div>

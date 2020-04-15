@@ -17,7 +17,6 @@ const IDV_STATE_DEAD                =99;
 class Population {
     InfectedCnt                 =0;
     InfectedCntTot              =0;
-    CurrentlySickCnt            =0;
     HspCnt                      =0;
     HspCntTot                   =0;
     HspIntenseCnt               =0;
@@ -26,6 +25,8 @@ class Population {
     DeathCnt                    =0;     
     IsolatedCnt                 =0;
     PreventedInfectionsCnt      =0;
+    CurrentR0                   =0;
+    CurrentInfectedRatio        =0;
 
     MovementShortRange          =10;
     MovementLongRange           =200;
@@ -84,9 +85,23 @@ class Population {
     iterate(aImageData) {
         this.Steps++;
 
+        //var infCntBefore=this.InfectedCntTot;
+        var infections=0;
+        var idvCnt=0;
+
         for(var x=0;x<this.Width;x++) {
             for(var y=0;y<this.Height;y++) {
-                this.PopArray[x][y].iterate();
+                this.PopArray[x][y].iterate();                
+
+                switch(this.PopArray[x][y].State) {
+                    case IDV_STATE_SICK:
+                    case IDV_STATE_HOSPITALIZED:
+                    case IDV_STATE_HOSPITALIZED_INTENSE:
+                    case IDV_STATE_IMMUNE:
+                    case IDV_STATE_DEAD:
+                        infections+=this.PopArray[x][y].HasInfected.length;
+                        idvCnt++;
+                }
 
                 var c=this.PopArray[x][y].getStateColour();
 
@@ -96,6 +111,9 @@ class Population {
                 aImageData.data[4 * (y * aImageData.width + x) + 3] = c[3]; // alpha
             }
         }
+
+        this.CurrentR0              =infections/idvCnt;
+        this.CurrentInfectedRatio   =Math.floor((this.InfectedCntTot*100000) / (this.Width*this.Height))/1000;
     }
 
 
@@ -130,8 +148,8 @@ class Individual {
         this.HspIntenseTime     =this.Owner.HspIntenseTime+this.Owner.HspIntenseTime*(Math.random()*2-1)*this.Owner.HspIntenseTimeJitter;
         this.CfrTestOnStep      =Math.floor(Math.random()*this.HspIntenseTime);
 
-        this.InfectionStep      =this.TimeToGetSick/this.Owner.InfectionRate; // spread infections equaly during spreading time
-        this.InfectionStepCnt   =0;
+        this.SpreadStepWidth    =this.TimeToGetSick/this.Owner.InfectionRate; // spread infections equaly during spreading time
+        this.SpreadStep         =this.SpreadStepWidth;
     }
 
     //
@@ -140,7 +158,7 @@ class Individual {
             var dX=Math.floor(Math.random()*aRange-aRange/2);
             var lY=Math.sqrt(aRange*aRange-dX*dX);
 
-            var dY=Math.floor(Math.random() * lY-lY/2);
+            var dY=Math.floor(Math.random()*lY-lY/2);
 
             var iX=this.PosX+dX;
             var iY=this.PosY+dY;
@@ -206,14 +224,14 @@ class Individual {
                         this.sendInfectionSignal(0);
                     }
 
-                    if(this.InfectionStepCnt<this.SpreadingSteps) {
+                    if(this.SpreadStep<=this.SpreadingSteps) {
                         if(Math.random()<=this.Owner.MovementLongShortRatio) {
                             this.infectInRange(this.Owner.MovementLongRange);
                         } else {                        
                             this.infectInRange(this.Owner.MovementShortRange);
                         }   
                         
-                        this.InfectionStepCnt+=this.InfectionStep;
+                        this.SpreadStep+=this.SpreadStepWidth;
                     }
                     
                     if((this.SpreadingSteps==this.SickTestOnStep) && (Math.random()<=this.Owner.SicknessProbability)) {        
@@ -377,6 +395,7 @@ $( document ).ready(function() {
     var chartInfections;
     var chartHsp;
     var chartIntenseHsp;
+    var chartCoefficients;
 
     setIntervalFnc=function() {
         intervalID=setInterval(function() {
@@ -403,6 +422,11 @@ $( document ).ready(function() {
                 chartIntenseHsp.data.datasets[1].data.push(pop.HspIntenseCntTot);
                 chartIntenseHsp.data.datasets[2].data.push(pop.DeathCnt);
                 chartIntenseHsp.update();
+
+                chartCoefficients.data.labels.push(pop.Steps);
+                chartCoefficients.data.datasets[0].data.push(pop.CurrentR0);
+                chartCoefficients.data.datasets[1].data.push(pop.CurrentInfectedRatio);
+                chartCoefficients.update();
             }            
         },100);
     }
@@ -575,6 +599,43 @@ $( document ).ready(function() {
                       id: '1',
                       type: 'linear',
                       position: 'left'
+                    }]                    
+                }
+            }  
+        }); 
+
+        var ctxCoefficients = document.getElementById('chartCoefficients').getContext('2d');       
+        
+        chartCoefficients = new Chart(ctxCoefficients, {    
+            type: 'line',          
+            data: {            
+                datasets: [{    
+                    label: 'R0',
+                    backgroundColor: 'rgba(255, 0, 0, 0.25)',
+                    borderColor: 'rgb(255, 0, 0)',
+                    lineTension: 0,
+                    yAxisID: '1',
+                    data: []
+                },{    
+                    label: 'Infection Ratio %',
+                    backgroundColor: 'rgba(0, 0, 0, 0.25)',
+                    borderColor: 'rgb(0, 0, 0)',
+                    lineTension: 0,
+                    yAxisID: '2',
+                    data: []
+                }]
+            },
+
+            options: {                
+                scales: {
+                    yAxes: [{
+                      id: '1',
+                      type: 'linear',
+                      position: 'left'
+                    },{
+                        id: '2',
+                        type: 'linear',
+                        position: 'right'
                     }]                    
                 }
             }  
